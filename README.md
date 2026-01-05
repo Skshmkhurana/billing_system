@@ -287,14 +287,3 @@ The application includes Kamal deployment configuration:
 - In development, check logs for email content
 - Verify background job processor is running
 
-## License
-
-[Specify your license here]
-
-## Author
-
-[Your name/team]
-
-## Contributing
-
-[Contributing guidelines if applicable]

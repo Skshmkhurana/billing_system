@@ -1,0 +1,15 @@
+<h2>Your Invoice</h2>
+
+<p>Total Amount: <%= @bill.total_amount %></p>
+<p>Paid Amount: <%= @bill.paid_amount %></p>
+
+<h3>Items</h3>
+<ul>
+  <% @bill.bill_items.each do |item| %>
+    <li>
+      <%= item.product.name %> -
+      Qty: <%= item.quantity %> -
+      Tax: <%= item.tax_amount %>
+    </li>
+  <% end %>
+</ul>

@@ -1,4 +1,10 @@
 Rails.application.routes.draw do
+  # get "bills/new"
+  # get "bills/create"
+  # get "bills/show"
+  # get "bills/index"
+  resources :bills, only: [:new, :create, :show, :index]
+  root "bills#new"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

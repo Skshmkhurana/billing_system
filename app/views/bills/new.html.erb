@@ -1,0 +1,157 @@
+<h1>Billing Page</h1>
+
+<%= form_with url: bills_path, method: :post, id: "bill_form" do %>
+
+  <!-- Customer Email -->
+  <div>
+    <label><strong>Customer Email</strong></label><br>
+    <input type="email" name="customer_email" id="customer_email" required>
+    <div id="email_error" style="color: red; font-size: 12px; margin-top: 4px;"></div>
+  </div>
+
+  <br>
+
+  <!-- Products Section -->
+  <h3>Products Purchased</h3>
+
+  <table border="1" cellpadding="5">
+    <thead>
+    <tr>
+      <th>Product ID</th>
+      <th>Quantity</th>
+    </tr>
+    </thead>
+    <tbody id="products">
+    <tr>
+      <td><input name="bill_items[][product_code]" required></td>
+      <td><input type="number" name="bill_items[][quantity]" min="1" required></td>
+    </tr>
+    </tbody>
+  </table>
+
+  <br>
+  <button type="button" onclick="addProduct()">Add New</button>
+
+  <br><br>
+  <hr>
+
+  <!-- Denominations Section (EXACTLY AS PDF INTENDS) -->
+  <h3>Available Denominations in Shop</h3>
+
+  <table border="1" cellpadding="5">
+    <thead>
+    <tr>
+      <th>Denomination</th>
+      <th>Count</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% @denominations.each do |d| %>
+      <tr>
+        <td><%= d.value %></td>
+        <td>
+          <input
+            type="number"
+            min="0"
+            name="denominations[<%= d.id %>]"
+            value="<%= d.available_count %>">
+        </td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+
+  <br>
+  <hr>
+
+  <!-- Paid Amount -->
+  <div>
+    <label><strong>Paid Amount</strong></label><br>
+    <input type="number" name="paid_amount" required>
+  </div>
+
+  <br>
+  <%= submit_tag "Generate Bill" %>
+
+<% end %>
+
+<script>
+    function addProduct() {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+    <td><input name="bill_items[][product_code]" required></td>
+    <td><input type="number" name="bill_items[][quantity]" min="1" required></td>
+  `;
+        document.getElementById("products").appendChild(row);
+    }
+
+    // Email validation function
+    function validateEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    // Show error message
+    function showEmailError(message) {
+        const errorDiv = document.getElementById("email_error");
+        errorDiv.textContent = message;
+        errorDiv.style.display = "block";
+    }
+
+    // Clear error message
+    function clearEmailError() {
+        const errorDiv = document.getElementById("email_error");
+        errorDiv.textContent = "";
+        errorDiv.style.display = "none";
+    }
+
+    // Form validation on submit
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.getElementById("bill_form");
+        const emailInput = document.getElementById("customer_email");
+
+        // Validate on form submit
+        form.addEventListener("submit", function(e) {
+            const email = emailInput.value.trim();
+
+            // Check if email is empty
+            if (!email) {
+                e.preventDefault();
+                showEmailError("Customer email is required");
+                emailInput.focus();
+                return false;
+            }
+
+            // Check if email is valid format
+            if (!validateEmail(email)) {
+                e.preventDefault();
+                showEmailError("Please enter a valid email address");
+                emailInput.focus();
+                return false;
+            }
+
+            // Clear error if validation passes
+            clearEmailError();
+        });
+
+        // Real-time validation as user types
+        emailInput.addEventListener("blur", function() {
+            const email = emailInput.value.trim();
+            if (!email) {
+                showEmailError("Customer email is required");
+            } else if (!validateEmail(email)) {
+                showEmailError("Please enter a valid email address");
+            } else {
+                clearEmailError();
+            }
+        });
+
+        // Clear error when user starts typing
+        emailInput.addEventListener("input", function() {
+            const email = emailInput.value.trim();
+            if (email && validateEmail(email)) {
+                clearEmailError();
+            }
+        });
+    });
+</script>

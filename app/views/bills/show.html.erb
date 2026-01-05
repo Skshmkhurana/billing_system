@@ -1,0 +1,93 @@
+<h1>Bill Details</h1>
+
+<p><strong>Customer Email:</strong> <%= @bill.customer.email %></p>
+
+<hr>
+
+<h3>Bill Section</h3>
+
+<table border="1" cellpadding="5" style="width: 100%; border-collapse: collapse;">
+  <thead>
+  <tr>
+    <th>Product ID</th>
+    <th>Unit Price</th>
+    <th>Quantity</th>
+    <th>Purchase Price</th>
+    <th>Tax % for item</th>
+    <th>Tax payable for item</th>
+    <th>Total price of the item</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% 
+    total_price_without_tax = 0
+    total_tax_payable = 0
+  %>
+  <% @bill.bill_items.each do |item|
+      purchase_price = item.unit_price * item.quantity
+      total_price_without_tax += purchase_price
+      total_tax_payable += item.tax_amount
+      total_price_of_item = purchase_price + item.tax_amount
+  %>
+    <tr>
+      <td><%= item.product.product_code %></td>
+      <td><%= number_with_precision(item.unit_price, precision: 2) %></td>
+      <td><%= item.quantity %></td>
+      <td><%= number_with_precision(purchase_price, precision: 2) %></td>
+      <td><%= number_with_precision(item.product.tax_percentage, precision: 2) %>%</td>
+      <td><%= number_with_precision(item.tax_amount, precision: 2) %></td>
+      <td><%= number_with_precision(total_price_of_item, precision: 2) %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<h3>Payment Summary</h3>
+
+<table border="1" cellpadding="5" style="width: 100%; border-collapse: collapse;">
+  <tbody>
+    <tr>
+      <td><strong>Total price without tax:</strong></td>
+      <td style="text-align: right;"><%= number_with_precision(total_price_without_tax, precision: 2) %></td>
+    </tr>
+    <tr>
+      <td><strong>Total tax payable:</strong></td>
+      <td style="text-align: right;"><%= number_with_precision(total_tax_payable, precision: 2) %></td>
+    </tr>
+    <tr>
+      <td><strong>Net price of the purchased item:</strong></td>
+      <td style="text-align: right;"><%= number_with_precision(@bill.total_amount, precision: 2) %></td>
+    </tr>
+    <tr>
+      <td><strong>Rounded down value of the purchased items net price:</strong></td>
+      <td style="text-align: right;"><%= number_with_precision(@bill.total_amount.floor, precision: 2) %></td>
+    </tr>
+    <tr>
+      <td><strong>Balance payable to the customer:</strong></td>
+      <td style="text-align: right;"><%= number_with_precision(@bill.paid_amount - @bill.total_amount, precision: 2) %></td>
+    </tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h3>Change Given (Denominations)</h3>
+
+<table border="1" cellpadding="5">
+  <thead>
+  <tr>
+    <th>Denomination</th>
+    <th>Count</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% @bill.payment_breakdowns.each do |pb| %>
+    <tr>
+      <td><%= pb.denomination.value %></td>
+      <td><%= pb.count %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>

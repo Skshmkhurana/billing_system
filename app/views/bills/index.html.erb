@@ -1,0 +1,16 @@
+<h1>Previous Purchases</h1>
+
+<%= form_with url: bills_path, method: :get do %>
+  <input name="email" placeholder="Customer Email">
+  <%= submit_tag "Search" %>
+<% end %>
+
+<% if @bills %>
+  <ul>
+    <% @bills.each do |bill| %>
+      <li>
+        <%= link_to "Bill ##{bill.id}", bill_path(bill) %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>
